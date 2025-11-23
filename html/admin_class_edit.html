@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模擬授業 登録 - 管理者用</title>
+    <link rel="stylesheet" href="style.css">
+    <!--<style>
+        /* 最低限のレイアウト調整用CSS */
+        .form-section { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
+        .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .input-group { flex: 1; }
+        .time-slot { margin-top: 10px; display: none; /* 初期状態は非表示 */ }
+        .time-slot.active { display: block; }
+        .readonly-date { font-weight: bold; color: #555; }
+    </style>-->
+</head>
+<body>
+
+    <div class="container admin-container">
+        
+        <nav class="breadcrumb">
+            <a href="admin_index.html" class="back-link">&lt; 管理者ダッシュボードに戻る</a>
+        </nav>
+
+        <header class="page-header admin-header">
+            <h1>模擬授業 登録</h1>
+            <p>模擬授業の基本情報と、個別の受付期間、実施スケジュールを登録します。</p>
+        </header>
+
+        <form action="admin_index.html" method="post" enctype="multipart/form-data">
+            
+            <section class="form-section">
+                <h2>1. 基本情報</h2>
+                
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label>模擬授業名 (最大60文字) <span class="required">*</span></label>
+                    <input type="text" name="class_name" maxlength="60" required style="width: 100%;" placeholder="例：楽しいプログラミング体験">
+                </div>
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>担当教職員1 <span class="required">*</span></label>
+                        <input type="text" name="teacher_name_1" required placeholder="例: 高専 太郎">
+                    </div>
+                    <div class="input-group">
+                        <label>担当教職員2 (任意)</label>
+                        <input type="text" name="teacher_name_2" placeholder="例: 高専 花子">
+                    </div>
+                </div>
+
+                <div class="input-group" style="width: 50%; margin-bottom: 15px;">
+                    <label>最大受入人数 (1回あたり) <span class="required">*</span></label>
+                    <input type="number" name="capacity" min="1" max="40" required placeholder="40">
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>部屋番号 <span class="required">*</span></label>
+                        <input type="text" name="room_number" required placeholder="例: 1-101">
+                    </div>
+                    <div class="input-group">
+                        <label>部屋名 <span class="required">*</span></label>
+                        <input type="text" name="room_name" required placeholder="例: 第1演習室">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>概要PDF (A4 1枚) <span class="required">*</span></label>
+                    <input type="file" name="summary_file" accept=".pdf" required>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>2. 申し込み受付期間 (この授業専用)</h2>
+                <p style="font-size: small; color: #666;">※この模擬授業の申し込みを受け付ける期間を設定します。</p>
+                
+                <div class="input-row">
+                    <div class="input-group">
+                        <label>受付開始日時 <span class="required">*</span></label>
+                        <input type="datetime-local" name="reception_start" required>
+                    </div>
+                    <div class="input-group">
+                        <label>受付終了日時 <span class="required">*</span></label>
+                        <input type="datetime-local" name="reception_end" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>3. 実施スケジュール</h2>
+                <p>「開催日設定」で登録された開催日に基づいて時間割を設定します。</p>
+
+                <div style="background: #f9f9f9; padding: 15px; margin-bottom: 15px;">
+                    <h3>1日目：<span class="readonly-date">2025年08月01日</span> (設定済)</h3>
+                    
+                    <label>実施回数:</label>
+                    <select id="day1_count" name="day1_count" onchange="updateSlots(1)">
+                        <option value="0">実施しない</option>
+                        <option value="1">1回</option>
+                        <option value="2">2回</option>
+                        <option value="3">3回</option>
+                    </select>
+
+                    <div id="day1_slots">
+                        <div class="time-slot" id="day1_slot_1">
+                            第1回: <input type="time" name="day1_start_1"> ～ <input type="time" name="day1_end_1">
+                        </div>
+                        <div class="time-slot" id="day1_slot_2">
+                            第2回: <input type="time" name="day1_start_2"> ～ <input type="time" name="day1_end_2">
+                        </div>
+                        <div class="time-slot" id="day1_slot_3">
+                            第3回: <input type="time" name="day1_start_3"> ～ <input type="time" name="day1_end_3">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f9f9f9; padding: 15px;">
+                    <h3>2日目：<span class="readonly-date">2025年08月02日</span> (設定済)</h3>
+                    
+                    <label>実施回数:</label>
+                    <select id="day2_count" name="day2_count" onchange="updateSlots(2)">
+                        <option value="0" selected>実施しない</option>
+                        <option value="1">1回</option>
+                        <option value="2">2回</option>
+                        <option value="3">3回</option>
+                    </select>
+
+                    <div id="day2_slots">
+                        <div class="time-slot" id="day2_slot_1">
+                            第1回: <input type="time" name="day2_start_1"> ～ <input type="time" name="day2_end_1">
+                        </div>
+                        <div class="time-slot" id="day2_slot_2">
+                            第2回: <input type="time" name="day2_start_2"> ～ <input type="time" name="day2_end_2">
+                        </div>
+                        <div class="time-slot" id="day2_slot_3">
+                            第3回: <input type="time" name="day2_start_3"> ～ <input type="time" name="day2_end_3">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button type="submit" class="btn btn-primary" style="padding: 10px 30px;">登録する</button>
+                <button type="reset" class="btn btn-secondary" onclick="setTimeout(() => { updateSlots(1); updateSlots(2); }, 10)">リセット</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        // 実施回数に応じて入力欄の表示/非表示を切り替える関数
+        function updateSlots(day) {
+            const count = document.getElementById('day' + day + '_count').value;
+            
+            for (let i = 1; i <= 3; i++) {
+                const slot = document.getElementById('day' + day + '_slot_' + i);
+                const inputs = slot.querySelectorAll('input');
+                
+                if (i <= count) {
+                    slot.classList.add('active'); // 表示
+                    inputs.forEach(input => input.required = true); // 必須にする
+                } else {
+                    slot.classList.remove('active'); // 非表示
+                    inputs.forEach(input => {
+                        input.required = false; // 必須解除
+                        input.value = ''; // 値をクリア
+                    });
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全データ削除 - 管理者用</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container admin-container">
+
+        <nav class="breadcrumb">
+            <a href="admin_index.html" class="back-link">&lt; 管理者用ホームページに戻る</a>
+        </nav>
+
+        <div class="reset-wrapper">
+            
+            <header class="danger-header">
+                <h1 class="danger-title">全データの削除（システムリセット）</h1>
+                <p class="danger-desc">この操作は取り消すことができません。慎重に操作してください。</p>
+            </header>
+
+            <!--<section class="reset-confirm-box">
+                <h2>以下のデータがすべて完全に削除されます</h2>
+                <ul class="delete-list">
+                    <li>全ての<strong>模擬授業データ</strong>（授業名、日時、PDFなど）</li>
+                    <li>全ての<strong>申し込みデータ</strong>（中学生・保護者情報、予約状況）</li>
+                    <li>全ての<strong>管理者設定</strong>（受付期間設定など）</li>
+                </ul>
+                <p class="alert-text">※削除されたデータは復元できません。</p>
+            </section>-->
+
+            <form action="admin_delete_complete.html" method="post" class="reset-form">
+                
+                <div class="confirmation-step">
+                    <label for="confirm_keyword">
+                        確認のため、次のボックスに <strong>削除を実行する</strong> と入力してください。
+                    </label>
+                    <input type="text" id="confirm_keyword" name="confirm_keyword" 
+                           placeholder="削除を実行する" required 
+                           oninput="checkInput(this)">
+                </div>
+
+                <div class="reset-actions">
+                    <a href="admin_index.html" class="btn btn-secondary">キャンセル</a>
+                    
+                    <button type="submit" id="deleteBtn" class="btn btn-danger btn-large" disabled>
+                        全データを削除する
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        function checkInput(input) {
+            const deleteBtn = document.getElementById('deleteBtn');
+            // 入力された文字が「削除を実行する」と一致した場合のみボタンを有効化
+            if (input.value === '削除を実行する') {
+                deleteBtn.disabled = false;
+                deleteBtn.style.opacity = "1";
+                deleteBtn.style.cursor = "pointer";
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.style.opacity = "0.5";
+                deleteBtn.style.cursor = "not-allowed";
+            }
+        }
+    </script>
+
+</body>
+</html>

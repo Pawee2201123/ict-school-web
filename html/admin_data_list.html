@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データ管理・出力 - 管理者用</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container admin-container">
+        
+        <nav class="breadcrumb">
+            <a href="admin_index.html" class="back-link">&lt; 管理者ホームページに戻る</a>
+        </nav>
+
+        <header class="page-header admin-header">
+            <h1>データ管理・出力</h1>
+            <p>登録データの一覧表示とCSVダウンロードを行います。</p>
+        </header>
+
+        <div class="tab-menu">
+            <button class="tab-btn active">参加者リスト (授業別)</button>
+            <button class="tab-btn">模擬授業一覧</button>
+            <button class="tab-btn">全申込者一覧</button>
+        </div>
+
+        <section class="data-section">
+            <h2 class="section-title">参加者リスト出力</h2>
+            <p>各授業の「参加確定者」の名簿を出力します。</p>
+
+            <div class="filter-box">
+                <form action="" class="filter-form">
+                    <label>表示する授業:</label>
+                    <select name="class_id">
+                        <option value="1">模擬授業1: 楽しいプログラミング体験</option>
+                        <option value="2">模擬授業2: 電子工作入門</option>
+                    </select>
+
+                    <label>実施回:</label>
+                    <select name="time_slot">
+                        <option value="all">全回</option>
+                        <option value="1-1">1日目 第1回</option>
+                        <option value="1-2">1日目 第2回</option>
+                    </select>
+
+                    <button type="submit" class="btn btn-outline">表示更新</button>
+                </form>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn btn-secondary icon-btn">表示中のリストのCSVをダウンロード</button>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>中学生氏名</th>
+                        <th>フリガナ</th>
+                        <th>中学校名</th>
+                        <th>学年</th>
+                        <th>保護者氏名</th>
+                        <th>実施回</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>高専 太郎</td>
+                        <td>コウセン タロウ</td>
+                        <td>△△中学校</td>
+                        <td>3年</td>
+                        <td>高専 次郎</td>
+                        <td>1日目 第1回</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>高専 花子</td>
+                        <td>コウセン ハナコ</td>
+                        <td>〇〇中学校</td>
+                        <td>2年</td>
+                        <td>高専 梅子</td>
+                        <td>1日目 第1回</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </div>
+
+</body>
+</html>
