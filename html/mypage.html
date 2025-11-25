@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - 模擬授業予約システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <nav class="breadcrumb">
+            <a href="lesson_list.html" class="back-link">&lt; 開講情報一覧に戻る</a>
+            <span class="separator">|</span>
+            <a href="login.html" class="nav-link">ログアウト</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>マイページ</h1>
+            <p class="welcome-text">ようこそ <span class="user-name-highlight">高専 太郎</span> さん!</p>
+        </header>
+
+        <div class="mypage-layout">
+            
+            <section class="reservation-section">
+                <h2 class="section-title">現在の予約状況</h2>
+                
+                <div class="reservation-card">
+                    <div class="card-header">
+                        <h3 class="lesson-title">プログラミング体験</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="lesson-date">日時:12月18日(1日目) 9:00〜10:00</p>
+                        <p class="lesson-place">場所：0-000 〇〇教室</p>
+                        <p class="lesson-teacher">担当：田中 先生</p>
+                        <div class="card-actions">
+                            <a href="summary1.pdf" target="_blank" class="btn btn-outline">概要PDFを見る</a>
+                        </div>
+                    </div>
+                </div>
+
+                </section>
+
+            <aside class="profile-section">
+                <h2 class="section-title">登録情報</h2>
+                <div class="profile-box">
+                    <table class="profile-table">
+                        <tr>
+                            <th>中学生氏名</th>
+                            <td>高専 太郎</td>
+                        </tr>
+                        <tr>
+                            <th>保護者氏名</th>
+                            <td>高専 花子</td>
+                        </tr>
+                        <tr>
+                            <th>中学校名</th>
+                            <td>〇〇中学校</td>
+                        </tr>
+                        <tr>
+                            <th>学年</th>
+                            <td>3年生</td>
+                        </tr>
+                        <tr>
+                            <th>メールアドレス</th>
+                            <td>example@email.com</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="profile-actions">
+                        <button type="button" class="btn btn-secondary" onclick="alert('編集機能は現在開発中です')">登録情報を変更する</button>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+</body>
+</html>
