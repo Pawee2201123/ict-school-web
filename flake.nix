@@ -17,6 +17,12 @@
 
       shellHook = ''
         export LD_LIBRARY_PATH=${pkgs.postgresql.lib}/lib:$LD_LIBRARY_PATH
+
+        export PGHOST=127.0.0.1
+        export PGPORT=5432
+        export PGUSER=postgres
+        export PGDATABASE=ict 
+        export PGSSLMODE=disable
         echo "🔧 Go version: $(go version)"
         echo "🐘 libpq is available via postgresql"
         exec zsh

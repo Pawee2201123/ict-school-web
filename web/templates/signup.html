@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>新規登録</title>
+
+        <style>
+.error {
+    color: red;
+    display: none;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+        </style>
+    </head>
+    <body>
+        <h2>新規登録</h2>
+
+        <form action="/signup" method="post" autocomplete="off" id="signupForm">
+            <label>
+                Email:
+                <input type="email" name="email" id="email" required>
+            </label>
+            <div id="emailError" class="error">有効なメールアドレスを入力してください。</div>
+
+            <br><br>
+
+            <label>
+                パスワード:
+                <input type="password" name="password" id="password" minlength="8" required>
+            </label>
+            <div id="pwError" class="error">パスワードは8文字以上である必要があります。</div>
+
+            <br><br>
+
+            <button type="submit">登録</button>
+        </form>
+
+        <p><a href="/login">ログインへ</a></p>
+
+        <script>
+            const form = document.getElementById("signupForm");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const emailError = document.getElementById("emailError");
+            const pwError = document.getElementById("pwError");
+
+            // Prevent form submission unless inputs are valid
+            form.addEventListener("submit", function (e) {
+                let valid = true;
+
+                // email validation
+                if (!email.checkValidity()) {
+                    emailError.style.display = "block";
+                    valid = false;
+                } else {
+                    emailError.style.display = "none";
+                }
+
+                // password validation
+                if (!password.checkValidity()) {
+                    pwError.style.display = "block";
+                    valid = false;
+                } else {
+                    pwError.style.display = "none";
+                }
+
+                if (!valid) {
+                    e.preventDefault(); // stop form submission
+                }
+            });
+        </script>
+    </body>
+</html>
