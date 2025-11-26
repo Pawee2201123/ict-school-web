@@ -14,6 +14,15 @@ type User struct {
 	CreatedAt    string
 }
 
+type UserProfile struct {
+    ID           int
+    UserID       int
+    StudentName  sql.NullString
+    SchoolName   sql.NullString
+    Grade        sql.NullString
+    GuardianName sql.NullString
+}
+
 var ErrUserExists = errors.New("user already exists")
 
 func CreateUser(db *sql.DB, email, passwordHash string) (int, error) {
@@ -42,4 +51,20 @@ func GetUserByEmail(db *sql.DB, email string) (*User, error) {
 		return nil, err
 	}
 	return u, nil
+}
+func GetUserProfile(db *sql.DB, userID int) (*UserProfile, error) {
+    p := &UserProfile{}
+    err := db.QueryRow(`
+        SELECT id, user_id, student_name, school_name, grade, guardian_name
+        FROM user_profiles
+        WHERE user_id = $1
+        LIMIT 1
+    `, userID).Scan(&p.ID, &p.UserID, &p.StudentName, &p.SchoolName, &p.Grade, &p.GuardianName)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, nil // no profile yet
+        }
+        return nil, err
+    }
+    return p, nil
 }

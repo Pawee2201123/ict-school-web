@@ -3,9 +3,6 @@ package handlers
 
 import (
 	"database/sql"
-	"errors"
-	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -44,45 +41,107 @@ func New(db *sql.DB, tpl *template.Renderer, cfg config.Config) *Handler {
 
 // Home - protected
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request, data map[string]any) {
-	// data contains session info
-	email, _ := data["email"].(string)
-	fmt.Fprintf(w, "<h1>ようこそ %s</h1><p><a href=\"/logout\">ログアウト</a></p>", email)
-}
+    // 1) extract user_id from session data (cookie-decoded map)
+    var userID int
+    switch v := data["user_id"].(type) {
+    case int:
+        userID = v
+    case float64:
+        userID = int(v) // securecookie/json may decode numbers as float64
+    default:
+        http.Redirect(w, r, "/login", http.StatusSeeOther)
+        return
+    }
 
+    // 2) fetch profile from DB
+    profile, err := models.GetUserProfile(h.db, userID)
+    if err != nil {
+        http.Error(w, "server error", http.StatusInternalServerError)
+        return
+    }
+
+    // 3) prepare view data (avoid modifying original map if you prefer)
+    view := map[string]any{
+        "Email":       data["email"],
+        "StudentName": "",
+        "SchoolName":  "",
+        "Grade":       "",
+        "GuardianName":    "",
+    }
+    if profile != nil {
+        if profile.StudentName.Valid {
+            view["StudentName"] = profile.StudentName.String
+        }
+        if profile.SchoolName.Valid {
+            view["SchoolName"] = profile.SchoolName.String
+
+        }
+        if profile.Grade.Valid {
+            view["Grade"] = profile.Grade.String
+        }
+        if profile.GuardianName.Valid {
+            view["GuardianName"] = profile.GuardianName.String
+
+        }
+    }
+
+    // 4) render template with view data
+    h.tpl.Render(w, "mypage.html", view)
+}
 // Signup: GET shows form; POST creates user
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		h.tpl.Render(w, "signup.html", nil)
-		return
-	}
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "bad request", http.StatusBadRequest)
-		return
-	}
-	email := r.PostForm.Get("email")
-	pw := r.PostForm.Get("password")
-	if email == "" || pw == "" || len(pw) < 8 {
-		http.Error(w, "invalid input", http.StatusBadRequest)
-		return
-	}
+    if r.Method == http.MethodGet {
+        h.tpl.Render(w, "signup.html", nil)
+        return
+    }
 
-	hash, err := auth.HashPassword(pw)
-	if err != nil {
-		http.Error(w, "server error", http.StatusInternalServerError)
-		return
-	}
-	_, err = models.CreateUser(h.db, email, hash)
-	if errors.Is(err, models.ErrUserExists) {
-		http.Error(w, "email already registered", http.StatusConflict)
-		return
-	}
-	if err != nil {
-		log.Printf("create user error: %v", err)
-		http.Error(w, "server error", http.StatusInternalServerError)
-		return
-	}
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "bad request", http.StatusBadRequest)
+        return
+    }
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+    email := r.PostForm.Get("Email")
+    pw := r.PostForm.Get("password")
+    studentName := r.PostForm.Get("student_name")
+    schoolName := r.PostForm.Get("school_name")
+    grade := r.PostForm.Get("grade")
+    guardianName := r.PostForm.Get("guardian_name")
+
+    if email == "" || pw == "" || studentName == "" || schoolName == "" || grade == "" || guardianName == "" {
+        http.Error(w, "invalid input", http.StatusBadRequest)
+        return
+    }
+
+    hashed, err := auth.HashPassword(pw)
+    if err != nil {
+        http.Error(w, "server error", http.StatusInternalServerError)
+        return
+    }
+
+    // insert into users table
+    var userID int
+    err = h.db.QueryRow(
+        `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
+        email, hashed,
+    ).Scan(&userID)
+    if err != nil {
+        http.Error(w, "email already exists", http.StatusConflict)
+        return
+    }
+
+    // insert into user_profiles table
+    _, err = h.db.Exec(`
+        INSERT INTO user_profiles
+        (user_id, student_name, school_name, grade, guardian_name)
+        VALUES ($1, $2, $3, $4, $5)
+    `, userID, studentName, schoolName, grade, guardianName)
+    if err != nil {
+        http.Error(w, "server error", http.StatusInternalServerError)
+        return
+    }
+
+    // redirect to login page after successful signup
+    http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
 // Login: GET shows form; POST authenticates
