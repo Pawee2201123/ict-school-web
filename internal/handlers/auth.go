@@ -113,6 +113,14 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// determine admin flag from DB (ensure models.User or DB has this column)
+	var isAdmin bool
+	if err := h.db.QueryRow("SELECT is_admin FROM users WHERE id = $1", u.ID).Scan(&isAdmin); err != nil {
+		// If this fails, treat as server error rather than letting login succeed silently
+		http.Error(w, "server error", http.StatusInternalServerError)
+		return
+	}
+
 	// create session payload
 	payload := map[string]any{
 		"user_id": u.ID,
@@ -130,10 +138,16 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		HttpOnly: true,
 		Expires:  time.Now().Add(24 * time.Hour),
-		// Secure: true, // enable with HTTPS in production
+		// Secure: true, // enable in production with HTTPS
 	}
 	http.SetCookie(w, c)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	// redirect based on role
+	if isAdmin {
+		http.Redirect(w, r, "/admin", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
 }
 
 // Logout

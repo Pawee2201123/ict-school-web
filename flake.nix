@@ -23,10 +23,13 @@
         export PGUSER=postgres
         export PGDATABASE=ict 
         export PGSSLMODE=disable
+        export ADMIN_EMAIL=admin@admin.com
+        export ADMIN_PASSWORD=admin1234
         echo "🔧 Go version: $(go version)"
         echo "🐘 libpq is available via postgresql"
         exec zsh
       '';
+      # TODO use secret manager for admin, cookie hash,encrypt key
     };
   };
 }

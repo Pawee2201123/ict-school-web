@@ -16,6 +16,11 @@ func main() {
 	db := database.Connect(cfg.DB_DSN)
 	defer db.Close()
 
+	// set admin 
+	if err := handlers.EnsureAdmin(db); err != nil {
+		log.Fatal("Failed to ensure admin:", err)
+	}
+
 	tpl := template.Load("web/templates")
 
 	h := handlers.New(db, tpl, cfg)
@@ -24,12 +29,16 @@ func main() {
 	// public
 	mux.HandleFunc("/signup", h.Signup)
 	mux.HandleFunc("/login", h.Login)
+
+
 	// static (optional)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
 	// protected
 	mux.HandleFunc("/", h.RequireLogin(h.Home))
 	mux.HandleFunc("/logout", h.RequireLogin(h.Logout))
+
+	mux.HandleFunc("/admin", h.RequireAdmin(h.AdminPage))
 
 	addr := cfg.ListenAddr
 	if addr == "" {
