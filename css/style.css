@@ -1,0 +1,36 @@
+.login-container {
+    text-align: left;
+    width:100%;
+    max-width: 300%;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.form-group{
+    text-align: center;
+    margin-bottom: 20px;
+    display:flex;
+}
+
+label {
+     text-align: left;
+     width: 140px;
+     margin-bottom:0 ;       /* ラベルの幅を固定 */
+}
+
+input[type="text"],
+input[type="password"]{
+    width: 40%;
+    padding: 10px;
+    border:1px solid #ccc;
+}
+
+
+
+/*.form-section { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
+        .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
+        .input-group { flex: 1; }
+        .time-slot { margin-top: 10px; display: none; }
+        .time-slot.active { display: block; }
+        .readonly-date { font-weight: bold; color: #555; }*/
