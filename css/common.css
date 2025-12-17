@@ -1,0 +1,35 @@
+.container {
+    max-width: 1000px; /* PCでの最大幅 */
+    margin: 0 auto;    /* 中央寄せ */
+    padding: 20px;     /* スマホで端がくっつかないように */
+}
+
+.section-title {
+    font-size: 18px;
+    border-left: 5px solid #007bff; /* 左に青い線 */
+    padding-left: 10px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+    background-color: #f0f2f5; /* 全ページの背景色 */
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

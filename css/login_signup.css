@@ -4,7 +4,6 @@
     max-width: 600px; 
     padding: 40px;
     border-radius: 8px; /* 角丸 */
-    box-shadow: 0 4px 10px rgba(2, 2, 2, 0.1); /* 柔らかい影 */
     margin: 20px; /* スマホ表示時の端の余白 */
 }
 
@@ -59,10 +58,3 @@ a:hover {
     text-decoration: underline;
 }
 
-
-/*.form-section { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
-        .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
-        .input-group { flex: 1; }
-        .time-slot { margin-top: 10px; display: none; }
-        .time-slot.active { display: block; }
-        .readonly-date { font-weight: bold; color: #555; }*/
