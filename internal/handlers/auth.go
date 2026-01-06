@@ -13,6 +13,7 @@ import (
 
 	"crypto/rand"
 	"encoding/hex"
+	"log"
 )
 
 
@@ -40,55 +41,41 @@ func New(db *sql.DB, tpl *template.Renderer, cfg config.Config) *Handler {
 }
 
 // Home - protected
-func (h *Handler) Home(w http.ResponseWriter, r *http.Request, data map[string]any) {
-    // 1) extract user_id from session data (cookie-decoded map)
+func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+    // 1. Get User ID
+    data := r.Context().Value(sessionKey).(map[string]any)
+    
     var userID int
     switch v := data["user_id"].(type) {
-    case int:
-        userID = v
-    case float64:
-        userID = int(v) // securecookie/json may decode numbers as float64
-    default:
-        http.Redirect(w, r, "/login", http.StatusSeeOther)
-        return
+    case int: userID = v
+    case float64: userID = int(v)
     }
 
-    // 2) fetch profile from DB
-    profile, err := models.GetUserProfile(h.db, userID)
+    // 2. Fetch Profile (Existing logic)
+    profile, _ := models.GetUserProfile(h.db, userID)
+    
+    // 3. FETCH ENROLLMENTS (New!)
+    // Use the function we wrote in enrollment.go
+    mySessions, err := models.GetUserEnrollments(h.db, userID)
     if err != nil {
-        http.Error(w, "server error", http.StatusInternalServerError)
-        return
+        // handle error
     }
 
-    // 3) prepare view data (avoid modifying original map if you prefer)
+    // 4. Prepare View
     view := map[string]any{
-        "Email":       data["email"],
-        "StudentName": "",
-        "SchoolName":  "",
-        "Grade":       "",
-        "GuardianName":    "",
-    }
-    if profile != nil {
-        if profile.StudentName.Valid {
-            view["StudentName"] = profile.StudentName.String
-        }
-        if profile.SchoolName.Valid {
-            view["SchoolName"] = profile.SchoolName.String
-
-        }
-        if profile.Grade.Valid {
-            view["Grade"] = profile.Grade.String
-        }
-        if profile.GuardianName.Valid {
-            view["GuardianName"] = profile.GuardianName.String
-
-        }
+        "StudentName":  profile.StudentName.String,
+        "SchoolName":   profile.SchoolName.String,
+        "Grade":        profile.Grade.String,
+        "GuardianName": profile.GuardianName.String,
+        "Email":        data["email"],
+        
+        "Reservations": mySessions, // <--- Pass the list here
     }
 
-    // 4) render template with view data
     h.tpl.Render(w, "mypage.html", view)
 }
 // Signup: GET shows form; POST creates user
+
 func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
     if r.Method == http.MethodGet {
         h.tpl.Render(w, "signup.html", nil)
@@ -118,23 +105,20 @@ func (h *Handler) Signup(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // insert into users table
-    var userID int
-    err = h.db.QueryRow(
-        `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id`,
-        email, hashed,
-    ).Scan(&userID)
+    userID, err := models.CreateUser(h.db, email, hashed)
     if err != nil {
-        http.Error(w, "email already exists", http.StatusConflict)
-        return
+	    if err == models.ErrUserExists {
+		    http.Error(w, "email already exists", http.StatusConflict)
+		    return
+	    }
+	    log.Printf("Signup error: %v", err) // Good practice to log the real error
+	    http.Error(w, "server error", http.StatusInternalServerError)
+	    return
     }
 
     // insert into user_profiles table
-    _, err = h.db.Exec(`
-        INSERT INTO user_profiles
-        (user_id, student_name, school_name, grade, guardian_name)
-        VALUES ($1, $2, $3, $4, $5)
-    `, userID, studentName, schoolName, grade, guardianName)
+    err = models.CreateUserProfile(h.db, userID, studentName, schoolName, grade, guardianName)
+
     if err != nil {
         http.Error(w, "server error", http.StatusInternalServerError)
         return
@@ -210,7 +194,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // Logout
-func (h *Handler) Logout(w http.ResponseWriter, r *http.Request, _ map[string]any) {
+func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	c := &http.Cookie{
 		Name:     h.sess.Key,
 		Value:    "",

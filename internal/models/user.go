@@ -41,6 +41,14 @@ func CreateUser(db *sql.DB, email, passwordHash string) (int, error) {
 	return id, nil
 }
 
+func CreateUserProfile(db *sql.DB, userID int, name, school, grade, guardian string) error {
+    _, err := db.Exec(`
+        INSERT INTO user_profiles (user_id, student_name, school_name, grade, guardian_name)
+        VALUES ($1, $2, $3, $4, $5)
+    `, userID, name, school, grade, guardian)
+    return err
+}
+
 func GetUserByEmail(db *sql.DB, email string) (*User, error) {
 	u := &User{}
 	err := db.QueryRow(

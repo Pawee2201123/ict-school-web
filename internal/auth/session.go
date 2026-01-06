@@ -16,3 +16,4 @@ func NewSecureCookie(hashKey, blockKey string) *Session {
 	sc := securecookie.New([]byte(hashKey), bk)
 	return &Session{Secure: sc, Key: "session"}
 }
+

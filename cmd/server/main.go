@@ -38,7 +38,29 @@ func main() {
 	mux.HandleFunc("/", h.RequireLogin(h.Home))
 	mux.HandleFunc("/logout", h.RequireLogin(h.Logout))
 
-	mux.HandleFunc("/admin", h.RequireAdmin(h.AdminPage))
+	mux.HandleFunc("/lesson", h.RequireLogin(h.StudentLessonList))
+
+	mux.HandleFunc("/application", h.RequireLogin(h.StudentApplication))
+
+	protectAdmin := func(next http.HandlerFunc) http.HandlerFunc {
+		return h.RequireLogin(h.RequireAdmin(next))
+	}
+
+
+	mux.HandleFunc("/admin", protectAdmin(h.AdminPage))
+
+	mux.HandleFunc("/admin/config", protectAdmin(h.AdminConfig))
+
+	mux.HandleFunc("/admin/classes/new", protectAdmin(h.AdminCreateClass))
+
+	// 1. View Detail Page
+	mux.HandleFunc("/admin/classes/detail", protectAdmin(h.AdminClassDetail))
+
+	// 2. Action: Add Session
+
+	mux.HandleFunc("/admin/sessions/add", protectAdmin(h.AdminAddSession))
+
+	mux.HandleFunc("/admin/classes", protectAdmin(h.AdminClassList))
 
 	addr := cfg.ListenAddr
 	if addr == "" {

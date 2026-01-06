@@ -11,7 +11,7 @@
     <div class="container">
 
         <nav class="breadcrumb">
-            <a href="lesson_list.html" class="back-link">&lt; 開講情報一覧に戻る</a>
+            <a href="/lesson" class="back-link">&lt; 開講情報一覧に戻る</a>
             <span class="separator">|</span>
             <a href="/logout" class="nav-link">ログアウト</a>
         </nav>
@@ -25,22 +25,27 @@
             
             <section class="reservation-section">
                 <h2 class="section-title">現在の予約状況</h2>
-                
+
+                {{range .Reservations}}
                 <div class="reservation-card">
                     <div class="card-header">
-                        <h3 class="lesson-title">プログラミング体験</h3>
+                        <h3 class="lesson-title">{{.ClassName}}</h3>
                     </div>
                     <div class="card-body">
-                        <p class="lesson-date">日時:12月18日(1日目) 9:00〜10:00</p>
-                        <p class="lesson-place">場所：0-000 〇〇教室</p>
-                        <p class="lesson-teacher">担当：田中 先生</p>
+                        <p class="lesson-date">
+                        日時: {{.StartAt.Format "01月02日"}} 
+                        {{.StartAt.Format "15:04"}} 〜 {{.EndAt.Format "15:04"}}
+                        </p>
                         <div class="card-actions">
-                            <a href="summary1.pdf" target="_blank" class="btn btn-outline">概要PDFを見る</a>
+                            <span class="badge badge-success">予約完了</span>
                         </div>
                     </div>
                 </div>
+                {{else}}
+                <p>予約している授業はありません。</p>
+                {{end}}
 
-                </section>
+            </section>
 
             <aside class="profile-section">
                 <h2 class="section-title">登録情報</h2>

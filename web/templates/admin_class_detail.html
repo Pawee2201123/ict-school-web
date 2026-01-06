@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><title>Manage Class: {{.Class.ClassName}}</title></head>
+<body>
+    <a href="/admin">Back to Dashboard</a>
+    
+    <h1>{{.Class.ClassName}}</h1>
+    <p>Room: {{.Class.RoomName}}</p>
+
+    <hr>
+
+    <h3>Current Sessions</h3>
+    <table border="1">
+        <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Capacity</th>
+            <th>Enrolled</th>
+            <th>Action</th>
+        </tr>
+        {{range .Sessions}}
+        <tr>
+            <td>Day {{.DaySequence}}</td>
+            <td>{{.StartAt}} - {{.EndAt}}</td> 
+            <td>{{.Capacity}}</td>
+            <td>{{.CurrentEnrolledCount}}</td>
+            <td>
+                <button disabled>Delete</button>
+            </td>
+        </tr>
+        {{end}}
+    </table>
+
+    <hr>
+
+    <h3>Add Session</h3>
+    <form action="/admin/sessions/add" method="POST">
+        <input type="hidden" name="class_id" value="{{.Class.ID}}">
+        
+        <label>Day:</label>
+        <select name="day_sequence">
+            <option value="1">Day 1</option>
+            <option value="2">Day 2</option>
+        </select>
+        
+        <label>Time:</label>
+        <input type="time" name="start_time" required> ~ 
+        <input type="time" name="end_time" required>
+        
+        <label>Capacity:</label>
+        <input type="number" name="capacity" value="40" required>
+
+        <button type="submit">Add Session</button>
+    </form>
+
+</body>
+</html>
