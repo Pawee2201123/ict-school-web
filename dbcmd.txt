@@ -1,0 +1,97 @@
+create classes table
+CREATE TABLE classes (
+    -- 授業ID (Class ID)
+    -- SERIAL creates an auto-incrementing integer
+    class_id SERIAL PRIMARY KEY,
+
+    -- 授業名 (Class Name)
+    class_name TEXT NOT NULL,
+
+    -- 授業概要（PDF) (Class Overview PDF)
+    -- Best Practice: Store the URL or File Path here, not the binary data.
+    syllabus_pdf_url TEXT,
+
+    -- 部屋番号 (Room Number)
+    -- Using VARCHAR because room numbers often contain letters (e.g., "101B")
+    room_number VARCHAR(50),
+
+    -- 部屋名 (Room Name)
+    room_name TEXT,
+
+    -- 申し込み受付開始日時 (Registration Start Date/Time)
+    -- TIMESTAMPTZ handles time zones correctly (Recommended)
+    registration_start_at TIMESTAMPTZ NOT NULL,
+
+    -- 申し込み受付終了日時 (Registration End Date/Time)
+    registration_end_at TIMESTAMPTZ NOT NULL
+);
+実施回ID table
+CREATE TABLE class_sessions (
+    -- 実施回ID (Session ID)
+    session_id SERIAL PRIMARY KEY,
+
+    -- 授業ID (Class ID)
+    -- 親テーブル(classes)との紐付け。classesテーブルのIDが存在しなければならない制約
+    class_id INT NOT NULL,
+
+    -- 開講日ID (Day Sequence / Session Number)
+    -- 「1日目」「2日目」などを管理。数値(1, 2...)で管理するのが一般的
+    day_sequence INT NOT NULL,
+
+    -- 授業開始時間 (Start Time)
+    -- 日付も含めて管理するために TIMESTAMPTZ を推奨
+    start_at TIMESTAMPTZ NOT NULL,
+
+    -- 授業終了時間 (End Time)
+    end_at TIMESTAMPTZ NOT NULL,
+
+    -- 受け入れ可能人数 (Capacity)
+    capacity INT NOT NULL,
+
+    -- 現在の申し込み数 (Current Enrollment Count)
+    -- 初期値は0。申し込みがあるたびにプログラムかトリガーで更新する
+    current_enrolled_count INT DEFAULT 0,
+
+    -- 外部キー制約 (Foreign Key)
+    -- 親の授業(classes)が削除されたら、この実施回データも自動削除(CASCADE)する設定
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE
+);
+CREATE TABLE instructors (
+    instructor_id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+);
+CREATE TABLE class_instructors (
+    class_id INT NOT NULL,
+    instructor_id INT NOT NULL,
+    
+
+    FOREIGN KEY (class_id) REFERENCES classes(class_id) ON DELETE CASCADE,
+    FOREIGN KEY (instructor_id) REFERENCES instructors(instructor_id) ON DELETE CASCADE,
+
+    PRIMARY KEY (class_id, instructor_id)
+);
+
+CREATE TABLE system_settings (
+    setting_key VARCHAR(50) PRIMARY KEY,
+    setting_value TEXT
+);
+
+-- Insert default placeholder dates
+INSERT INTO system_settings (setting_key, setting_value) VALUES 
+('event_date_1', '2025-08-01'),
+('event_date_2', '2025-08-02');
+
+
+CREATE TABLE classes (
+    class_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    teacher_1 VARCHAR(50) NOT NULL,
+    teacher_2 VARCHAR(50), -- Optional
+    capacity INT NOT NULL,
+    room_number VARCHAR(20) NOT NULL,
+    room_name VARCHAR(50) NOT NULL,
+    pdf_path TEXT NOT NULL, -- We store the filename here
+    reception_start TIMESTAMPTZ NOT NULL,
+    reception_end TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - 模擬授業予約システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+
+        <nav class="breadcrumb">
+            <a href="/lesson" class="back-link">&lt; 開講情報一覧に戻る</a>
+            <span class="separator">|</span>
+            <a href="/logout" class="nav-link">ログアウト</a>
+        </nav>
+
+        <header class="page-header">
+            <h1>マイページ</h1>
+            <p class="welcome-text">ようこそ <span class="user-name-highlight">{{.StudentName}}</span> さん!</p>
+        </header>
+
+        <div class="mypage-layout">
+            
+            <section class="reservation-section">
+                <h2 class="section-title">現在の予約状況</h2>
+
+                {{range .Reservations}}
+                <div class="reservation-card">
+                    <div class="card-header">
+                        <h3 class="lesson-title">{{.ClassName}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="lesson-date">
+                        日時: {{.StartAt.Format "01月02日"}} 
+                        {{.StartAt.Format "15:04"}} 〜 {{.EndAt.Format "15:04"}}
+                        </p>
+                        <div class="card-actions">
+                            <span class="badge badge-success">予約完了</span>
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <p>予約している授業はありません。</p>
+                {{end}}
+
+            </section>
+
+            <aside class="profile-section">
+                <h2 class="section-title">登録情報</h2>
+                <div class="profile-box">
+                    <table class="profile-table">
+                        <tr>
+                            <th>中学生氏名</th>
+                            <td>{{.StudentName}}</td>
+                        </tr>
+                        <tr>
+                            <th>保護者氏名</th>
+                            <td>{{.GuardianName}}</td>
+                        </tr>
+                        <tr>
+                            <th>中学校名</th>
+                            <td>{{.SchoolName}}</td>
+                        </tr>
+                        <tr>
+                            <th>学年</th>
+                            <td>{{.Grade}}年生</td>
+                        </tr>
+                        <tr>
+                            <th>メールアドレス</th>
+                            <td>{{.Email}}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="profile-actions">
+                        <button type="button" class="btn btn-secondary" onclick="alert('編集機能は現在開発中です')">登録情報を変更する</button>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+    </div>
+
+</body>
+</html>

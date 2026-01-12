@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Class List - Admin</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Class Management</h1>
+        
+        <div style="margin-bottom: 20px;">
+            <a href="/admin">Back to Dashboard</a> | 
+            <a href="/admin/classes/new" class="btn">Create New Class</a>
+        </div>
+
+        <table border="1" width="100%" style="border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th>ID</th>
+                    <th>Class Name</th>
+                    <th>Room</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .}}
+                <tr>
+                    <td>{{.ID}}</td>
+                    <td>{{.ClassName}}</td>
+                    <td>{{.RoomName}}</td>
+                    <td style="text-align: center;">
+                        <a href="/admin/classes/detail?id={{.ID}}">Manage Sessions</a>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

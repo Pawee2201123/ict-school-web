@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者用ホームページ - 模擬授業予約システム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container admin-container">
+
+        <header class="page-header admin-header">
+            <div class="header-content">
+                <h1>管理者用ホームページ</h1>
+                <p class="login-info">ログイン中: 管理者 太郎 <span class="separator">|</span> <a href="login.html" class="logout-link">ログアウト</a></p>
+            </div>
+        </header>
+
+        <nav class="admin-menu-grid">
+            
+            <div class="menu-card">
+                <div class="menu-text">
+                    <h3>全体設定（開催日）</h3>
+                </div>
+                <div class="menu-action">
+                    <a href="admin_config_edit.html" class="btn btn-primary btn-block">開催日の設定</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-text">
+                    <h3>模擬授業登録</h3>
+                </div>
+                <div class="menu-action">
+                    <a href="admin_class_edit.html" class="btn btn-primary btn-block">登録画面へ</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="menu-text">
+                    <h3>データ管理・出力</h3>
+                    <p>参加者リスト・CSV出力</p>
+                </div>
+                <div class="menu-action">
+                    <a href="admin_data_list.html" class="btn btn-primary btn-block">データ管理へ</a>
+                </div>
+            </div>
+
+            <div class="menu-card danger-card">
+                <div class="menu-text">
+                    <h3>システムリセット</h3>
+                    <p>全データの削除</p>
+                </div>
+                <div class="menu-action">
+                    <a href="admin_reset.html" class="btn btn-danger btn-block">リセット画面へ</a>
+                </div>
+            </div>
+        </nav>
+
+        <hr class="divider">
+
+        <section class="status-monitor">
+            <h2 class="section-title">各授業の申し込み状況 (先着順)</h2>
+            
+            <table class="monitor-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>模擬授業名</th>
+                        <th>実施回</th>
+                        <th>定員</th>
+                        <th>申込済</th>
+                        <th>残席</th>
+                        <th>状態</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2">1</td>
+                        <td rowspan="2" class="class-name">楽しいプログラミング体験</td>
+                        <td>1日目 第1回 (9:00)</td>
+                        <td>40</td>
+                        <td>38</td>
+                        <td class="text-danger">2</td>
+                        <td><span class="badge badge-warning">残りわずか</span></td>
+                    </tr>
+                    <tr>
+                        <td>1日目 第2回 (11:00)</td>
+                        <td>40</td>
+                        <td>10</td>
+                        <td>30</td>
+                        <td><span class="badge badge-success">受付中</span></td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td class="class-name">電子工作入門</td>
+                        <td>1日目 第1回 (9:00)</td>
+                        <td>20</td>
+                        <td>20</td>
+                        <td>0</td>
+                        <td><span class="badge badge-gray">満席</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </div>
+
+</body>
+</html>

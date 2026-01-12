@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <title>模擬授業予約システム - 開講情報一覧</title>
+    </head>
+    <body>
+
+        <div style="text-align: right;">
+            <a href="/">マイページ</a> | <a href="/logout">ログアウト</a>
+        </div>
+
+        <div style="text-align: center;">
+            <h1>模擬授業予約システム</h1>
+            <p>希望する授業の開始時間をクリックして申し込みへ進んでください。</p>
+        </div>
+
+        <table border="1" width="100%" style="border-collapse: collapse; text-align: center;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th width="20%">授業名</th>
+                    <th width="20%">模擬授業概要</th>
+                    <th width="15%">場所</th>
+                    <th width="45%">予約 (授業開始時間)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .}} 
+                <tr>
+                    <td rowspan="2">{{.Class.ClassName}}</td> <td rowspan="2">
+                        {{if .Class.SyllabusPDFURL}}
+                        <a href="/static/uploads/{{.Class.SyllabusPDFURL}}" target="_blank">概要.pdf</a>
+                        {{else}}
+                        なし
+                        {{end}}
+                    </td>
+                    <td rowspan="2">
+                        {{.Class.RoomNumber}}<br>{{.Class.RoomName}}
+                    </td>
+
+                    <td style="text-align: left; padding: 10px;">
+                        {{range .Sessions}}
+                        <div style="display: inline-block; margin: 5px;">
+                            <strong>Day {{.Session.DaySequence}}</strong><br>
+
+                            <button type="button" 
+                                    class="btn {{if .IsFull}}btn-disabled{{else}}btn-primary{{end}}"
+                                    {{if .ButtonDisabled}}disabled{{end}}
+                                    onclick="location.href='/application?session_id={{.Session.ID}}'">
+
+                                {{.Session.StartAt.Format "15:04"}} 
+
+                                ({{.ButtonLabel}})
+                            </button>
+                        </div>
+                        {{end}}
+                    </td>
+                </tr>
+                <tr><td colspan="4" style="height: 10px; background-color: #eee;"></td></tr>
+                {{end}}
+            </tbody>
+        </table>
+    </body>
+</html>
