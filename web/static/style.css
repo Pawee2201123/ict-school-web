@@ -178,6 +178,7 @@ textarea {
 
 .form-group {
     margin-bottom: 15px;
+    width : 400px;
 }
 
 /* ボタンの配置 */
