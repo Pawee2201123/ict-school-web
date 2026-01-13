@@ -1,0 +1,330 @@
+@charset "UTF-8";
+
+/* =========================================
+   基本リセット・共通設定
+   ========================================= */
+* {
+    box-sizing: border-box; /* パディングやボーダーを幅に含める */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif; /* 基本フォント */
+    line-height: 1.6;
+    background-color: #fff;
+    color: #333;
+}
+
+/* 画像などが枠からはみ出さないようにする */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================================
+   レイアウトコンテナ
+   ========================================= */
+/* メインコンテンツの幅を制限し、中央寄せにする */
+.container,
+.admin-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ログイン・登録画面用の狭いコンテナ */
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    margin: 5px auto;
+    padding: 20px;
+    border: 1px solid #ddd; /* 視認性確保のための境界線 */
+    border-radius: 5px;
+}
+
+/* =========================================
+   ヘッダー・ナビゲーション
+   ========================================= */
+/* パンくずリスト */
+.breadcrumb {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.separator {
+    margin: 0 10px;
+}
+
+/* ページヘッダー（タイトルとユーザー情報の横並びなど） */
+.page-header,
+.admin-header {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between; /* タイトルとログイン情報を左右に配置 */
+    align-items: center;
+    flex-wrap: wrap; /* 画面が狭い場合は折り返す */
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.login-info {
+    margin: 0;
+}
+
+/* =========================================
+   管理者メニュー (Grid Layout)
+   ========================================= */
+/* カード型のメニューをグリッド状に並べる */
+.admin-menu-grid {
+    display: block;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.menu-card {
+  border: none;           /* 枠線を消す */
+    background: none;       /* 背景色を消す */
+    padding: 0;             /* 余白をリセット */
+    margin-bottom: 30px;    /* 次の項目との間隔 */
+    
+    display: block;         /* Flex配置を廃止 */
+    text-align: left;       /* 左寄せ */
+}
+
+.menu-text h3 {
+    margin-top: 0;
+}
+
+/* =========================================
+   マイページレイアウト (Flex Layout)
+   ========================================= */
+/* 予約状況とプロフィールを横並び（スマホでは縦並び）にする */
+.mypage-layout {
+    display: block;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.reservation-section {
+    flex: 2; /* 予約一覧の方を広く取る */
+    min-width: 300px; /* 最小幅 */
+}
+
+.profile-section {
+    flex: 1; /* プロフィール欄 */
+    min-width: 250px;
+}
+
+/* 予約カード */
+.reservation-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.profile-box {
+    border: 1px solid #ddd;
+    padding: 15px;
+}
+
+/* =========================================
+   フォーム関連レイアウト
+   ========================================= */
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 入力欄の横並び設定 */
+.input-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    flex-wrap: wrap; /* 画面幅が狭いときは縦積み */
+}
+
+.input-group {
+    flex: 1; /* 均等に幅を広げる */
+    min-width: 200px; /* 狭くなりすぎないようにする */
+}
+
+/* フォーム要素の幅を調整 */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="number"],
+select,
+textarea {
+    width: 100%; /* 親要素幅いっぱいに */
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* ボタンの配置 */
+.form-actions,
+.reset-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center; /* 中央寄せ */
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* =========================================
+   テーブル (共通)
+   ========================================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+/* スマホ等でテーブルがはみ出す場合のスクロール対応が必要な場合 */
+.monitor-table-wrapper,
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* マイページのプロフィールテーブル等の微調整 */
+.profile-table th {
+    background-color: #f9f9f9;
+    width: 40%;
+}
+
+.user-info-table th {
+    background-color: #f9f9f9;
+    width: 30%;
+}
+
+/* =========================================
+   その他ユーティリティ
+   ========================================= */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+
+.lesson-info-card,
+.application-form {
+    max-width: 800px;   /* ボックスの横幅を小さく制限 */
+    width: 100%;        /* スマホ等では幅いっぱいに */
+    margin-left: 0;     /* 左寄せ */
+    margin-right: auto; /* 右側は余白 */
+}
+/* 申し込み詳細カード */
+.lesson-info-card {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.info-list {
+    list-style: none;
+    padding: 0;
+}
+
+.info-list li {
+    margin-bottom: 10px;
+    display: flex;
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+}
+
+.info-list .label {
+    font-weight: bold;
+    width: 150px;
+    flex-shrink: 0;
+}
+
+/* 注意事項ボックス */
+.consent-box {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.add-session-form {
+    max-width: 400px; /* 横幅を制限して、右側に余白を作る */
+    text-align: left; /* 左寄せ */
+    margin-bottom: 30px;
+    margin-left: 10px;
+}
+.add-session-form label {
+    display: block;
+    margin-top: 0px; /* 上の項目との間隔 */
+    margin-bottom: 0px; /* 入力欄との間隔 */
+}
+
+.login-container button{
+    background-color: #1686ff;  /* 鮮やかな青色 */
+    color: #ffffff;             /* 文字色を白に */
+    border: none;               /* 枠線を消す */
+    padding: 10px 20px;         /* ボタンの内側の余白 */
+    border-radius: 4px;         /* 角を少し丸くする */
+    cursor: pointer;            /* カーソルを指の形にする */
+    font-size: 1rem;            /* 文字サイズ */
+    text-decoration: none;      /* リンクの下線を消す */
+    display: inline-block;      /* レイアウト崩れ防止 */
+    text-align: center;
+}
+
+/* マウスを乗せたときに少し濃い青にする */
+.login-container button:hover {
+    background-color: #0056b3;
+}
+
+.input-row {
+    display: block;         /* 横並び(Flex)を解除して縦積みに */
+    margin: 0;              /* 余白は個々のグループで調整 */
+}
+
+/* 2. ラベルと入力欄を横並びにする */
+/* .input-row の中のグループも、単独のグループも対象 */
+.form-section .input-group {
+    display: flex;          /* ラベルと入力欄を横に並べる */
+    align-items: center;    /* 上下の中心を揃える */
+    margin-bottom: 20px;    /* 下の項目との間隔 */
+    width: 100%;
+}
+
+/* 3. ラベルの幅を固定して、入力欄の開始位置を揃える */
+.form-section label {
+    width: 220px;           /* ラベル幅を固定（文字数に合わせて調整可） */
+    flex-shrink: 0;         /* 画面が狭くてもラベル幅を縮めない */
+    margin: 0;              /* 余白リセット */
+}
+
+/* 4. 入力欄のサイズ調整 */
+.form-section input[type="text"],
+.form-section input[type="datetime-local"] {
+    flex-grow: 1;           /* 行の残りスペースに合わせて伸びる */
+    max-width: 500px;       /* ただし横に長くなりすぎないように制限 */
+    width: auto !important; /* HTML内のstyle指定などを上書きして整える */
+    margin: 0;              /* 余計な余白を削除 */
+}

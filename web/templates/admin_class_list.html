@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>模擬授業一覧 - 管理者用</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <div class="container">
@@ -11,7 +11,7 @@
         
         <div style="margin-bottom: 20px;">
             <a href="/admin">管理者ホームページに戻る</a> | 
-            <a href="/admin/classes/new" class="btn">Create New Class</a>
+            <a href="/admin/classes/new" class="btn">模擬授業登録</a>
         </div>
 
         <table border="1" width="100%" style="border-collapse: collapse;">
@@ -30,7 +30,7 @@
                     <td>{{.ClassName}}</td>
                     <td>{{.RoomName}}</td>
                     <td style="text-align: center;">
-                        <a href="/admin/classes/detail?id={{.ID}}">Manage Sessions</a>
+                        <a href="/admin/classes/detail?id={{.ID}}">管理画面へ</a>
                     </td>
                 </tr>
                 {{end}}

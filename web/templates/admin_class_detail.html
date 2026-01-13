@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><title>模擬授業管理: {{.Class.ClassName}}</title></head>
+<link rel="stylesheet" href="../css/style.css">
 <body>
     <a href="/admin">管理者ホームページに戻る</a>
     
@@ -9,14 +10,14 @@
 
     <hr>
 
-    <h3>Current Sessions</h3>
+    <h3>現在の実施回</h3>
     <table border="1">
         <tr>
-            <th>Day</th>
-            <th>Time</th>
-            <th>Capacity</th>
-            <th>Enrolled</th>
-            <th>Action</th>
+            <th>日付</th>
+            <th>時間</th>
+            <th>定員</th>
+            <th>申し込み済み人数</th>
+            <th>操作</th>
         </tr>
         {{range .Sessions}}
         <tr>
@@ -33,24 +34,24 @@
 
     <hr>
 
-    <h3>Add Session</h3>
-    <form action="/admin/sessions/add" method="POST">
+    <h3>実施回の追加</h3>
+    <form action="/admin/sessions/add" method="POST" class="add-session-form">
         <input type="hidden" name="class_id" value="{{.Class.ID}}">
         
-        <label>Day:</label>
+        <label>開催日:</label>
         <select name="day_sequence">
-            <option value="1">Day 1</option>
-            <option value="2">Day 2</option>
+            <option value="1">1日目</option>
+            <option value="2">2日目</option>
         </select>
         
-        <label>Time:</label>
+        <label>時間:</label>
         <input type="time" name="start_time" required> ~ 
         <input type="time" name="end_time" required>
         
-        <label>Capacity:</label>
+        <label>定員:</label>
         <input type="number" name="capacity" value="40" required>
 
-        <button type="submit">Add Session</button>
+        <button type="submit">追加する</button>
     </form>
 
 </body>
