@@ -2,15 +2,24 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<link rel="stylesheet" href="../static/style.css">
 <title>ログイン</title>
 </head>
 <body>
+   <div class="login-container">
   <h2>ログイン</h2>
   <form action="/login" method="post">
-    <label>Email: <input type="email" name="email" required></label><br>
-    <label>Password: <input type="password" name="password" required></label><br>
+    <div class="form-group">
+      <label>メールアドレス</label>
+      <input type="email" name="email" required>
+    </div>
+    <div class="form-group">
+      <label>パスワード</label>
+      <input type="password" name="password" required>
+    </div>
     <button type="submit">ログイン</button>
   </form>
   <p><a href="/signup">新規登録</a></p>
+  </div>
 </body>
 </html>

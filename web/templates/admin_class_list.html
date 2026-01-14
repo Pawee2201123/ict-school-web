@@ -2,25 +2,25 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Class List - Admin</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <title>模擬授業一覧 - 管理者用</title>
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Class Management</h1>
+        <h1>模擬授業一覧</h1>
         
         <div style="margin-bottom: 20px;">
-            <a href="/admin">Back to Dashboard</a> | 
-            <a href="/admin/classes/new" class="btn">Create New Class</a>
+            <a href="/admin">管理者ホームページに戻る</a> | 
+            <a href="/admin/classes/new" class="btn">模擬授業登録</a>
         </div>
 
         <table border="1" width="100%" style="border-collapse: collapse;">
             <thead>
                 <tr style="background-color: #f2f2f2;">
                     <th>ID</th>
-                    <th>Class Name</th>
-                    <th>Room</th>
-                    <th>Action</th>
+                    <th>授業名</th>
+                    <th>部屋名</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,7 +30,7 @@
                     <td>{{.ClassName}}</td>
                     <td>{{.RoomName}}</td>
                     <td style="text-align: center;">
-                        <a href="/admin/classes/detail?id={{.ID}}">Manage Sessions</a>
+                        <a href="/admin/classes/detail?id={{.ID}}">管理画面へ</a>
                     </td>
                 </tr>
                 {{end}}
