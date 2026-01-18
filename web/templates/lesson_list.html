@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>模擬授業予約システム - 開講情報一覧</title>
-        <link rel="stylesheet" href="../static/style.css">
+        <link rel="stylesheet" href="/static/style.css">
     </head>
     <body>
 
@@ -30,7 +30,7 @@
                 <tr>
                     <td rowspan="2">{{.Class.ClassName}}</td> <td rowspan="2">
                         {{if .Class.SyllabusPDFURL}}
-                        <a href="/static/uploads/{{.Class.SyllabusPDFURL}}" target="_blank">概要.pdf</a>
+                        <a href="/uploads/{{.Class.SyllabusPDFURL}}" target="_blank">概要.pdf</a>
                         {{else}}
                         なし
                         {{end}}

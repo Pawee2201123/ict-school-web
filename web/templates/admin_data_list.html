@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>データ管理 - 管理者</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .filter-box { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        .filter-row { display: flex; gap: 15px; align-items: flex-end; }
+        .filter-group { flex-grow: 1; }
+        .filter-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .filter-group select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        
+        .data-section { margin-bottom: 50px; }
+        .data-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .section-title { margin: 0; font-size: 1.4em; color: #333; }
+        
+        .preview-table, .monitor-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .preview-table th, .monitor-table th { background-color: #f2f2f2; border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .preview-table td, .monitor-table td { border: 1px solid #ddd; padding: 10px; }
+
+        .btn-preview { background-color: #17a2b8; color: white; border: none; padding: 10px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-download { display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; }
+        .btn-download:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="container admin-container">
+    
+    <header class="page-header admin-header">
+        <h1>データ管理・出力</h1>
+        <p><a href="/admin">ホーム</a> | <a href="/logout">ログアウト</a></p>
+    </header>
+
+    <section class="form-section">
+        <div class="filter-box">
+            <form method="GET" action="/admin/data">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label>授業 (Class)</label>
+                        <select name="class_id" id="classSelect" onchange="filterSessions()">
+                            <option value="0">すべての授業</option>
+                            {{range .Classes}}
+                                <option value="{{.ID}}" {{if eq $.SelectedClass .ID}}selected{{end}}>{{.ClassName}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>実施回 (Session)</label>
+                        <select name="session_id" id="sessionSelect" disabled>
+                            <option value="0">すべての回</option>
+                            {{range .Sessions}}
+                                <option value="{{.ID}}" data-class="{{.ClassID}}" {{if eq $.SelectedSess .ID}}selected{{end}}>{{.DisplayName}}</option>
+                            {{end}}
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="btn-preview">🔍 表示 (Update Views)</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+
+    <section class="data-section">
+        <div class="data-header">
+            <h2 class="section-title">① 参加者リスト (Participants)</h2>
+            <span style="color: #666;">該当件数: {{len .PreviewData}} 名</span>
+        </div>
+
+        {{if .PreviewData}}
+            <div style="overflow-x: auto;">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>氏名</th>
+                            <th>中学校</th>
+                            <th>授業</th>
+                            <th>実施回</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .PreviewData}}
+                        <tr>
+                            <td>{{.UserID}}</td>
+                            <td>{{.StudentName}}</td>
+                            <td>{{.SchoolName}}</td>
+                            <td>{{.ClassName}}</td>
+                            <td>{{.SessionTime}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="text-align: right;">
+                <a href="/admin/data/download?class_id={{.SelectedClass}}&session_id={{.SelectedSess}}" class="btn-download">
+                    📥 参加者名簿 CSV ダウンロード
+                </a>
+            </div>
+        {{else}}
+            <p style="text-align: center; color: #999; padding: 20px;">データがありません</p>
+        {{end}}
+    </section>
+
+
+    <section class="data-section">
+        <div class="data-header">
+            <h2 class="section-title">② 授業情報・受付状況 (Class Info)</h2>
+            <span style="color: #666;">該当件数: {{len .Statuses}} 件</span>
+        </div>
+
+        <table class="monitor-table">
+            <thead>
+                <tr>
+                    <th>模擬授業名</th>
+                    <th>実施回 (日時)</th>
+                    <th>場所</th>
+                    <th>担当教職員</th>
+                    <th>定員</th>
+                    <th>現在申込</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .Statuses}}
+                <tr>
+                    <td>{{.ClassName}}</td>
+                    <td>{{.SessionTime}}</td>
+                    <td>{{.RoomName}}</td>
+                    <td>{{.Instructors}}</td>
+                    <td>{{.Capacity}}</td>
+                    <td style="font-weight: bold;">{{.Count}} / {{.Capacity}}</td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6" style="text-align: center; color: #999;">データがありません</td></tr>
+                {{end}}
+            </tbody>
+        </table>
+
+        <div style="text-align: right;">
+            <a href="/admin/data/download/classes?class_id={{.SelectedClass}}&session_id={{.SelectedSess}}" class="btn-download" style="background-color: #6c757d;">
+                📥 授業情報 CSV ダウンロード
+            </a>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function filterSessions() {
+        const classSelect = document.getElementById('classSelect');
+        const sessionSelect = document.getElementById('sessionSelect');
+        const selectedClassID = classSelect.value;
+        const options = sessionSelect.querySelectorAll('option');
+
+        if (selectedClassID === "0") {
+            sessionSelect.value = "0";
+            sessionSelect.disabled = true;
+            return;
+        }
+
+        sessionSelect.disabled = false;
+        
+        let currentVal = sessionSelect.value;
+        let isCurrentValueValid = (currentVal === "0");
+
+        options.forEach(opt => {
+            if (opt.value === "0") {
+                opt.style.display = ""; 
+                return;
+            }
+            if (opt.dataset.class === selectedClassID) {
+                opt.style.display = "";
+                if (opt.value === currentVal) isCurrentValueValid = true;
+            } else {
+                opt.style.display = "none";
+            }
+        });
+
+        if (!isCurrentValueValid) sessionSelect.value = "0";
+    }
+
+    window.addEventListener('DOMContentLoaded', filterSessions);
+</script>
+
+</body>
+</html>

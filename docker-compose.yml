@@ -21,8 +21,13 @@ services:
       DATABASE_URL: postgres://postgres:mysecretpassword@db:5432/ict?sslmode=disable
       ADMIN_EMAIL: admin@example.com
       ADMIN_PASSWORD: admin1234
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      # Map the volume to that neutral folder
+      - uploads_data:/data/uploads
     depends_on:
       - db
 
 volumes:
   db_data:
+  uploads_data:

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"example.com/myapp/internal/config"
 	"example.com/myapp/internal/database"
@@ -30,9 +31,18 @@ func main() {
 	mux.HandleFunc("/signup", h.Signup)
 	mux.HandleFunc("/login", h.Login)
 
+	// 1. Determine where uploaded files live
+	// Default to local folder for development
+	uploadDir := os.Getenv("UPLOAD_DIR")
+	if uploadDir == "" {
+		uploadDir = "./web/static/uploads"
+	}
+	// Ensure the directory exists
+	os.MkdirAll(uploadDir, 0755)
 
-	// static (optional)
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web/static"))))
+
+	mux.Handle("/uploads/", http.StripPrefix("/uploads/", http.FileServer(http.Dir(uploadDir))))
 
 	// protected
 	mux.HandleFunc("/", h.RequireLogin(h.Home))
@@ -41,6 +51,7 @@ func main() {
 	mux.HandleFunc("/lesson", h.RequireLogin(h.StudentLessonList))
 
 	mux.HandleFunc("/application", h.RequireLogin(h.StudentApplication))
+
 
 	protectAdmin := func(next http.HandlerFunc) http.HandlerFunc {
 		return h.RequireLogin(h.RequireAdmin(next))
@@ -61,6 +72,13 @@ func main() {
 	mux.HandleFunc("/admin/sessions/add", protectAdmin(h.AdminAddSession))
 
 	mux.HandleFunc("/admin/classes", protectAdmin(h.AdminClassList))
+
+	mux.HandleFunc("/admin/data", protectAdmin(h.AdminDataPage))
+
+	mux.HandleFunc("/admin/data/download", protectAdmin(h.AdminDownloadCSV))
+
+	mux.HandleFunc("/admin/data/download/classes", protectAdmin(h.AdminDownloadClasses))
+
 
 	addr := cfg.ListenAddr
 	if addr == "" {

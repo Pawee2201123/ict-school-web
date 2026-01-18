@@ -3,6 +3,9 @@ package handlers
 
 import (
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 	"net/http"
 	"strconv"
 	"time"
@@ -53,22 +56,28 @@ func (h *Handler) AdminCreateClass(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// POST: Create Class Only
+	// Parse form with 10MB limit for files
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		http.Error(w, "Form error", http.StatusBadRequest)
 		return
 	}
 
-	// 1. Basic Parsing
-	// (Skipping file upload logic for brevity, keeping it empty/placeholder)
-	pdfName := "" 
-	
+	// 1. Handle File Upload (The Change)
+	// We call the saveFile helper function we created
+	pdfName, err := h.saveFile(r, "syllabus_pdf")
+	if err != nil {
+		// If the upload fails (e.g. permission error), stop and show error
+		http.Error(w, "File upload error: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	layout := "2006-01-02T15:04"
 	start, _ := time.Parse(layout, r.FormValue("reception_start"))
 	end, _ := time.Parse(layout, r.FormValue("reception_end"))
 
 	class := models.Class{
 		ClassName:           r.FormValue("class_name"),
-		SyllabusPDFURL:      pdfName,
+		SyllabusPDFURL:      pdfName, // <--- Now uses the actual saved filename
 		RoomNumber:          r.FormValue("room_number"),
 		RoomName:            r.FormValue("room_name"),
 		RegistrationStartAt: start,
@@ -88,11 +97,9 @@ func (h *Handler) AdminCreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// CHANGE: Redirect to the "Session Management" page for this new class
-	// This is the UX improvement: Create -> Immediately start adding sessions
+	// Redirect to the "Session Management" page for this new class
 	http.Redirect(w, r, fmt.Sprintf("/admin/classes/detail?id=%d", classID), http.StatusSeeOther)
 }
-
 // VIEW: Shows class info + existing sessions + add form
 func (h *Handler) AdminClassDetail(w http.ResponseWriter, r *http.Request) {
 	// 1. Get ID from URL query ?id=1
@@ -170,4 +177,47 @@ func (h *Handler) AdminClassList(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	h.tpl.Render(w, "admin_class_list.html", classes)
+}
+
+// saveFile saves an uploaded file and returns the filename
+func (h *Handler) saveFile(r *http.Request, formKey string) (string, error) {
+    // 1. Get the file from the form
+    file, header, err := r.FormFile(formKey)
+    if err != nil {
+        if err == http.ErrMissingFile {
+            return "", nil // No file uploaded, which is fine
+        }
+        return "", err
+    }
+    defer file.Close()
+
+    // 2. Determine where to save
+    uploadDir := os.Getenv("UPLOAD_DIR")
+    if uploadDir == "" {
+        uploadDir = "./web/static/uploads"
+    }
+    
+    // Ensure dir exists (just in case)
+    os.MkdirAll(uploadDir, 0755)
+
+    // 3. Create a unique filename (to avoid overwrites)
+    // e.g. "syllabus_1735689201.pdf"
+    ext := filepath.Ext(header.Filename)
+    filename := fmt.Sprintf("syllabus_%d%s", time.Now().Unix(), ext)
+    dstPath := filepath.Join(uploadDir, filename)
+
+    // 4. Create the destination file
+    dst, err := os.Create(dstPath)
+    if err != nil {
+        return "", err
+    }
+    defer dst.Close()
+
+    // 5. Copy the content
+    _, err = io.Copy(dst, file)
+    if err != nil {
+        return "", err
+    }
+
+    return filename, nil
 }

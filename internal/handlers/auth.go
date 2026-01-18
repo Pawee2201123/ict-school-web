@@ -51,25 +51,39 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
     case float64: userID = int(v)
     }
 
-    // 2. Fetch Profile (Existing logic)
-    profile, _ := models.GetUserProfile(h.db, userID)
-    
-    // 3. FETCH ENROLLMENTS (New!)
-    // Use the function we wrote in enrollment.go
-    mySessions, err := models.GetUserEnrollments(h.db, userID)
-    if err != nil {
-        // handle error
+    // 2. Fetch Profile (SAFE MODE)
+    // We explicitly check for error instead of ignoring it
+    profile, err := models.GetUserProfile(h.db, userID)
+
+    // 3. Prepare View Variables with DEFAULTS
+    // If profile is nil (Admin), these defaults prevent the crash
+    sName := "No Profile / Admin"
+    sSchool := "-"
+    sGrade := "-"
+    sGuardian := "-"
+
+    // Only overwrite if profile actually exists
+    if err == nil && profile != nil {
+        if profile.StudentName.Valid { sName = profile.StudentName.String }
+        if profile.SchoolName.Valid  { sSchool = profile.SchoolName.String }
+        if profile.Grade.Valid       { sGrade = profile.Grade.String }
+        if profile.GuardianName.Valid { sGuardian = profile.GuardianName.String }
     }
 
-    // 4. Prepare View
+    // 4. Fetch Enrollments
+    mySessions, err := models.GetUserEnrollments(h.db, userID)
+    if err != nil {
+        mySessions = nil // Handle error gracefully
+    }
+
+    // 5. Prepare View
     view := map[string]any{
-        "StudentName":  profile.StudentName.String,
-        "SchoolName":   profile.SchoolName.String,
-        "Grade":        profile.Grade.String,
-        "GuardianName": profile.GuardianName.String,
+        "StudentName":  sName,      // <--- Now using the safe variable
+        "SchoolName":   sSchool,
+        "Grade":        sGrade,
+        "GuardianName": sGuardian,
         "Email":        data["email"],
-        
-        "Reservations": mySessions, // <--- Pass the list here
+        "Reservations": mySessions,
     }
 
     h.tpl.Render(w, "mypage.html", view)

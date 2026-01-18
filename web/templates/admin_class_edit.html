@@ -4,15 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>模擬授業 登録 - 管理者用</title>
-    <link rel="stylesheet" href="../../../static/style.css">
-    <!--<style>
-        .form-section { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
-        .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
-        .input-group { flex: 1; }
-        .time-slot { margin-top: 10px; display: none; /* 初期状態は非表示 */ }
-        .time-slot.active { display: block; }
-        .readonly-date { font-weight: bold; color: #555; }
-    </style>-->
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
@@ -36,7 +28,12 @@
                     <label>模擬授業名 (最大60文字) <span class="required">*</span></label>
                     <input type="text" name="class_name" maxlength="60" required style="width: 80%;" placeholder="例：楽しいプログラミング体験">
                 </div>
-                
+
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label>授業概要PDF (シラバス) <span class="required">*</span></label>
+                    <input type="file" name="syllabus_pdf" accept="application/pdf" required style="width: 80%;">
+                    <small style="color: #666;">※PDF形式のみ (最大10MB)</small>
+                </div>
                 <div class="input-row">
                     <div class="input-group">
                         <label>担当教職員1 <span class="required">*</span></label>
@@ -78,8 +75,6 @@
                 </div>
             </section>
 
-            
-
             <div style="margin-top: 30px; text-align: center;">
                 <button type="submit" class="btn btn-primary" style="padding: 10px 30px;">登録する</button>
                 <button type="reset" class="btn btn-secondary" style="padding: 10px 30px;" onclick="setTimeout(() => { updateSlots(1); updateSlots(2); }, 10)">リセット</button>
@@ -87,8 +82,6 @@
 
         </form>
     </div>
-
-  
 
 </body>
 </html>

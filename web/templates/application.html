@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>詳細情報・申し込み確定</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
@@ -40,7 +40,7 @@
             
             <div class="card-footer">
                 {{if .Session.SyllabusPDF}}
-                    <a href="/static/uploads/{{.Session.SyllabusPDF}}" target="_blank" class="link-pdf">授業概要(PDF)を確認する</a>
+                    <a href="/uploads/{{.Session.SyllabusPDF}}" target="_blank" class="link-pdf">授業概要(PDF)を確認する</a>
                 {{else}}
                     <span class="text-muted">概要PDFはありません</span>
                 {{end}}
