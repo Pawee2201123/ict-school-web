@@ -20,7 +20,7 @@ services:
       - .env  # Load environment variables from .env file
     environment:
       # Override DATABASE_URL to use the docker-compose service name
-      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:mysecretpassword@db:5432/ict?sslmode=disable}
+      DATABASE_URL: postgres://postgres:mysecretpassword@db:5432/ict?sslmode=disable
     volumes:
       # Map the volume to that neutral folder
       - uploads_data:/data/uploads
