@@ -10,6 +10,12 @@ type Config struct {
 	CookieHash  string
 	CookieBlock string
 	ListenAddr  string
+	// SMTP Configuration
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUsername string
+	SMTPPassword string
+	SMTPFrom     string
 }
 
 func Load() Config {
@@ -19,6 +25,12 @@ func Load() Config {
 		CookieHash:  getEnv("COOKIE_HASH_KEY", ""),
 		CookieBlock: getEnv("COOKIE_BLOCK_KEY", ""),
 		ListenAddr:  getEnv("LISTEN_ADDR", ":8080"),
+		// SMTP Configuration
+		SMTPHost:     getEnv("SMTP_HOST", ""),
+		SMTPPort:     getEnv("SMTP_PORT", "587"),
+		SMTPUsername: getEnv("SMTP_USERNAME", ""),
+		SMTPPassword: getEnv("SMTP_PASSWORD", ""),
+		SMTPFrom:     getEnv("SMTP_FROM", ""),
 	}
 }
 

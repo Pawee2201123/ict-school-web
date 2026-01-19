@@ -10,6 +10,7 @@ import (
 	"example.com/myapp/internal/models"
 	"example.com/myapp/internal/template"
 	"example.com/myapp/internal/config"
+	"example.com/myapp/internal/email"
 
 	"crypto/rand"
 	"encoding/hex"
@@ -22,6 +23,7 @@ type Handler struct {
 	tpl    *template.Renderer
 	cfg    config.Config
 	sess   *auth.Session
+	mailer *email.Mailer
 }
 
 func New(db *sql.DB, tpl *template.Renderer, cfg config.Config) *Handler {
@@ -32,11 +34,21 @@ func New(db *sql.DB, tpl *template.Renderer, cfg config.Config) *Handler {
 	}
 	block := cfg.CookieBlock
 
+	// Initialize email mailer
+	emailConfig := email.Config{
+		Host:     cfg.SMTPHost,
+		Port:     email.ParsePort(cfg.SMTPPort),
+		Username: cfg.SMTPUsername,
+		Password: cfg.SMTPPassword,
+		From:     cfg.SMTPFrom,
+	}
+
 	return &Handler{
-		db:   db,
-		tpl:  tpl,
-		cfg:  cfg,
-		sess: auth.NewSecureCookie(hash, block),
+		db:     db,
+		tpl:    tpl,
+		cfg:    cfg,
+		sess:   auth.NewSecureCookie(hash, block),
+		mailer: email.NewMailer(emailConfig),
 	}
 }
 

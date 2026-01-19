@@ -8,8 +8,10 @@ import (
 
 // Define errors we can check for later
 var (
-	ErrAlreadyEnrolled = errors.New("user is already enrolled in this session")
-	ErrSessionFull     = errors.New("class session is full")
+	ErrAlreadyEnrolled    = errors.New("user is already enrolled in this session")
+	ErrSessionFull        = errors.New("class session is full")
+	ErrDayLimitExceeded   = errors.New("cannot enroll in more than 2 classes on the same day")
+	ErrTotalLimitExceeded = errors.New("cannot enroll in more than 3 classes total")
 )
 
 // EnrolledSession represents a class the user has joined (for MyPage)
@@ -96,4 +98,61 @@ func GetUserEnrollments(db *sql.DB, userID int) ([]EnrolledSession, error) {
         sessions = append(sessions, s)
     }
     return sessions, nil
+}
+
+// CheckEnrollmentLimits verifies that the user hasn't exceeded enrollment limits
+// Rules: Max 2 classes per day, Max 3 classes total
+func CheckEnrollmentLimits(db *sql.DB, userID, newSessionID int) error {
+	// Get the day_sequence of the session the user wants to enroll in
+	var newDaySequence int
+	err := db.QueryRow(`
+		SELECT day_sequence
+		FROM class_sessions
+		WHERE session_id = $1
+	`, newSessionID).Scan(&newDaySequence)
+	if err != nil {
+		return err
+	}
+
+	// Count enrollments per day and total
+	query := `
+		SELECT
+			cs.day_sequence,
+			COUNT(*) as count
+		FROM session_enrollments se
+		JOIN class_sessions cs ON se.session_id = cs.session_id
+		JOIN user_profiles up ON se.user_profile_id = up.id
+		WHERE up.user_id = $1
+		GROUP BY cs.day_sequence
+	`
+
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	dayCounts := make(map[int]int)
+	totalCount := 0
+
+	for rows.Next() {
+		var daySeq, count int
+		if err := rows.Scan(&daySeq, &count); err != nil {
+			return err
+		}
+		dayCounts[daySeq] = count
+		totalCount += count
+	}
+
+	// Check total limit (max 3 classes)
+	if totalCount >= 3 {
+		return ErrTotalLimitExceeded
+	}
+
+	// Check day limit (max 2 classes per day)
+	if dayCounts[newDaySequence] >= 2 {
+		return ErrDayLimitExceeded
+	}
+
+	return nil
 }

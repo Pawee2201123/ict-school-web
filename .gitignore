@@ -1,3 +1,6 @@
 result
 myserver-key.pem
 *.pdf
+
+# Environment variables with secrets
+.env

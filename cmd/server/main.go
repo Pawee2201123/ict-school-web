@@ -79,6 +79,10 @@ func main() {
 
 	mux.HandleFunc("/admin/data/download/classes", protectAdmin(h.AdminDownloadClasses))
 
+	mux.HandleFunc("/admin/reset", protectAdmin(h.AdminResetPage))
+
+	mux.HandleFunc("/admin/reset/execute", protectAdmin(h.AdminResetExecute))
+
 
 	addr := cfg.ListenAddr
 	if addr == "" {

@@ -11,7 +11,9 @@
     <div class="container admin-container">
 
         <nav class="breadcrumb">
-            <a href="admin_index.html" class="back-link">&lt; 管理者用ホームページに戻る</a>
+            <a href="/admin" class="back-link">管理者ホーム</a>
+            <span class="separator">|</span>
+            <a href="/logout" class="nav-link">ログアウト</a>
         </nav>
 
         <div class="reset-wrapper">
@@ -21,30 +23,33 @@
                 <p class="danger-desc">この操作は取り消すことができません。慎重に操作してください</p>
             </header>
 
-            <!--<section class="reset-confirm-box">
+            <section class="reset-confirm-box">
                 <h2>以下のデータがすべて完全に削除されます</h2>
                 <ul class="delete-list">
-                    <li>全ての<strong>模擬授業データ</strong>（授業名、日時、PDFなど）</li>
-                    <li>全ての<strong>申し込みデータ</strong>（中学生・保護者情報、予約状況）</li>
-                    <li>全ての<strong>管理者設定</strong>（受付期間設定など）</li>
+                    <li>全ての<strong>模擬授業データ</strong>（授業名、日時、講師など）</li>
+                    <li>全ての<strong>申込データ</strong>（中学生・保護者情報、予約状況）</li>
+                    <li>全ての<strong>生徒アカウント</strong></li>
+                    <li>全ての<strong>システム設定</strong>（開催日など）※デフォルトに戻ります</li>
+                    <li>全ての<strong>アップロードファイル</strong>（PDFなど）</li>
                 </ul>
-                <p class="alert-text">※削除されたデータは復元できません。</p>
-            </section>-->
+                <p class="alert-text"><strong>※管理者アカウントのみ保持されます</strong></p>
+                <p class="alert-text"><strong>※削除されたデータは復元できません</strong></p>
+            </section>
 
-            <form action="admin_delete_complete.html" method="post" class="reset-form">
-                
+            <form action="/admin/reset/execute" method="post" class="reset-form" onsubmit="return confirm('本当に全データを削除しますか？この操作は取り消せません。');">
+
                 <div class="confirmation-step">
                     <label for="confirm_keyword">
                         確認のため、次のボックスに <strong>削除を実行する</strong> と入力してください
                     </label>
-                    <input type="text" id="confirm_keyword" name="confirm_keyword" 
-                           placeholder="削除を実行する" required 
+                    <input type="text" id="confirm_keyword" name="confirm_keyword"
+                           placeholder="削除を実行する" required
                            oninput="checkInput(this)">
                 </div>
 
                 <div class="reset-actions">
-                    <a href="admin_index.html" class="btn btn-secondary">キャンセル</a>
-                    
+                    <a href="/admin" class="btn btn-secondary">キャンセル</a>
+
                     <button type="submit" id="deleteBtn" class="btn btn-danger btn-large" disabled>
                         全データを削除する
                     </button>

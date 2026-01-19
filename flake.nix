@@ -16,11 +16,11 @@
       version = "0.1.0";
       src = ./.;
 
-      # IMPORTANT: Nix needs to lock your Go dependencies. 
+      # IMPORTANT: Nix needs to lock your Go dependencies.
       # Step 1: Set this to lib.fakeHash
       # Step 2: Run 'nix build', it will fail and show you the real hash.
       # Step 3: Copy the real hash here.
-      vendorHash = "sha256-JewAZFfsD4yI/5u9u53FJJkcUCLjO3VYcaBLUFniPko="; 
+      vendorHash = "sha256-p1gp2CRaLIWR9MzciOShkh1p0rkVNZOZ55XorhFPH1A=";
 
       # Disable CGO to create a static binary (easier for Docker)
       CGO_ENABLED = 0;
@@ -69,12 +69,25 @@
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [ go postgresql ];
       shellHook = ''
+        # Load .env file if it exists
+        if [ -f .env ]; then
+          echo "📝 Loading environment variables from .env"
+          set -a
+          source .env
+          set +a
+        else
+          echo "⚠️  No .env file found. Copy .env.example to .env and configure it."
+        fi
+
         export LD_LIBRARY_PATH=${pkgs.postgresql.lib}/lib:$LD_LIBRARY_PATH
-        export PGHOST=127.0.0.1
-        export PGPORT=5432
-        export PGUSER=postgres
-        export PGDATABASE=ict 
-        export PGSSLMODE=disable
+
+        # Default PostgreSQL settings (can be overridden by .env)
+        export PGHOST=''${PGHOST:-127.0.0.1}
+        export PGPORT=''${PGPORT:-5432}
+        export PGUSER=''${PGUSER:-postgres}
+        export PGDATABASE=''${PGDATABASE:-ict}
+        export PGSSLMODE=''${PGSSLMODE:-disable}
+
         echo "🔧 Go version: $(go version)"
         echo "🐘 libpq is available"
         exec zsh

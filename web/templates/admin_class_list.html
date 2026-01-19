@@ -6,11 +6,17 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container admin-container">
+
+        <nav class="breadcrumb">
+            <a href="/admin" class="back-link">管理者ホーム</a>
+            <span class="separator">|</span>
+            <a href="/logout" class="nav-link">ログアウト</a>
+        </nav>
+
         <h1>模擬授業一覧</h1>
-        
+
         <div style="margin-bottom: 20px;">
-            <a href="/admin">管理者ホームページに戻る</a> | 
             <a href="/admin/classes/new" class="btn">模擬授業登録</a>
         </div>
 

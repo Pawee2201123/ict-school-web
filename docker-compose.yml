@@ -16,12 +16,11 @@ services:
     image: ict-web-image:latest  # <--- Matches the Nix image name
     ports:
       - "8080:8080"
+    env_file:
+      - .env  # Load environment variables from .env file
     environment:
-      # Connects to the 'db' service defined above
-      DATABASE_URL: postgres://postgres:mysecretpassword@db:5432/ict?sslmode=disable
-      ADMIN_EMAIL: admin@example.com
-      ADMIN_PASSWORD: admin1234
-      UPLOAD_DIR: /data/uploads
+      # Override DATABASE_URL to use the docker-compose service name
+      DATABASE_URL: ${DATABASE_URL:-postgres://postgres:mysecretpassword@db:5432/ict?sslmode=disable}
     volumes:
       # Map the volume to that neutral folder
       - uploads_data:/data/uploads

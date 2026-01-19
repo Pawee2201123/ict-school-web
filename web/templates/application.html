@@ -5,13 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>詳細情報・申し込み確定</title>
     <link rel="stylesheet" href="/static/style.css">
+    {{if .Error}}
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            alert('{{.Error}}');
+            window.location.href = '/lesson';
+        });
+    </script>
+    {{end}}
 </head>
 <body>
 
     <div class="container">
-        
+
         <nav class="breadcrumb">
-            <a href="/lesson" class="back-link">&lt; 開講情報一覧に戻る</a>
+            <a href="/lesson" class="back-link">開講情報一覧へ</a>
+            <span class="separator">|</span>
+            <a href="/" class="nav-link">マイページ</a>
+            <span class="separator">|</span>
+            <a href="/logout" class="nav-link">ログアウト</a>
         </nav>
         
         <header class="page-header">
@@ -77,7 +89,7 @@
                 </table>
                 
                 <p class="note-text">
-                    ※登録情報を変更したい場合は、<a href="/">マイページ</a>から変更してください
+                    ※登録情報は<a href="/">マイページ</a>で確認できます
                 </p>
             </section>
 

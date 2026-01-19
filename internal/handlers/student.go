@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
+	"example.com/myapp/internal/email"
 	"example.com/myapp/internal/models"
 )
 
@@ -138,26 +140,7 @@ func (h *Handler) StudentApplication(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // --- POST: PROCESS APPLICATION ---
-    if r.Method == http.MethodPost {
-        err := models.EnrollUser(h.db, sessID, userID)
-        if err != nil {
-            // Handle specific errors for better UX
-            if err.Error() == "user is already enrolled in this session" {
-                 http.Error(w, "You have already joined this class.", http.StatusConflict)
-            } else if err.Error() == "class session is full" {
-                 http.Error(w, "Class is full.", http.StatusConflict)
-            } else {
-                 http.Error(w, "Enrollment failed: "+err.Error(), http.StatusInternalServerError)
-            }
-            return
-        }
-        // Success! Redirect to MyPage
-        http.Redirect(w, r, "/", http.StatusSeeOther)
-        return
-    }
-
-    // --- GET: SHOW CONFIRMATION PAGE ---
+    // --- GET: Fetch data needed for both GET and error cases ---
     detail, err := models.GetSessionDetail(h.db, sessID)
     if err != nil {
         http.Error(w, "Session not found", http.StatusNotFound)
@@ -174,7 +157,94 @@ func (h *Handler) StudentApplication(w http.ResponseWriter, r *http.Request) {
         "Session": detail,
         "User":    profile,
         "Email":   data["email"],
+        "Error":   "",
     }
 
+    // --- POST: PROCESS APPLICATION ---
+    if r.Method == http.MethodPost {
+        var errorMsg string
+
+        // Check enrollment limits before allowing enrollment
+        if err := models.CheckEnrollmentLimits(h.db, userID, sessID); err != nil {
+            if err == models.ErrDayLimitExceeded {
+                errorMsg = "申込数の上限を超えています。同じ日に申し込める授業は2つまでです。"
+            } else if err == models.ErrTotalLimitExceeded {
+                errorMsg = "申込数の上限を超えています。申し込める授業は全体で3つまでです。"
+            } else {
+                errorMsg = "エラーが発生しました: " + err.Error()
+            }
+            viewData["Error"] = errorMsg
+            h.tpl.Render(w, "application.html", viewData)
+            return
+        }
+
+        // Proceed with enrollment
+        err := models.EnrollUser(h.db, sessID, userID)
+        if err != nil {
+            // Handle specific errors for better UX
+            if err == models.ErrAlreadyEnrolled {
+                errorMsg = "この授業には既に申し込んでいます。"
+            } else if err == models.ErrSessionFull {
+                errorMsg = "この授業は満席です。"
+            } else {
+                errorMsg = "申込に失敗しました: " + err.Error()
+            }
+            viewData["Error"] = errorMsg
+            h.tpl.Render(w, "application.html", viewData)
+            return
+        }
+
+        // Send confirmation email (asynchronously to avoid blocking)
+        go func() {
+            if err := h.sendEnrollmentEmail(userID, sessID, data["email"].(string)); err != nil {
+                log.Printf("Failed to send enrollment email to user %d: %v", userID, err)
+            }
+        }()
+
+        // Success! Redirect to MyPage
+        http.Redirect(w, r, "/", http.StatusSeeOther)
+        return
+    }
+
+    // --- GET: SHOW CONFIRMATION PAGE ---
     h.tpl.Render(w, "application.html", viewData)
+}
+
+// sendEnrollmentEmail sends a confirmation email after successful enrollment
+func (h *Handler) sendEnrollmentEmail(userID, sessionID int, userEmail string) error {
+	// Get session details
+	sessionDetail, err := models.GetSessionDetail(h.db, sessionID)
+	if err != nil {
+		return err
+	}
+
+	// Get user profile
+	profile, err := models.GetUserProfile(h.db, userID)
+	if err != nil {
+		return err
+	}
+
+	// Extract student name with fallback
+	studentName := "Student"
+	if profile != nil && profile.StudentName.Valid {
+		studentName = profile.StudentName.String
+	}
+
+	// Prepare email data
+	emailData := email.EnrollmentData{
+		StudentName: studentName,
+		ClassName:   sessionDetail.ClassName,
+		RoomNumber:  sessionDetail.RoomNumber,
+		RoomName:    sessionDetail.RoomName,
+		TeacherName: sessionDetail.TeacherName,
+		StartAt:     sessionDetail.StartAt,
+		EndAt:       sessionDetail.EndAt,
+	}
+
+	// Generate email content
+	subject := email.GetEnrollmentSubject()
+	body := email.GenerateEnrollmentConfirmation(emailData)
+
+	// Send email
+	return h.mailer.Send(userEmail, subject, body)
 }
