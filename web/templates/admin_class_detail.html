@@ -23,17 +23,13 @@
             <th>時間</th>
             <th>定員</th>
             <th>申し込み済み人数</th>
-            <th>操作</th>
         </tr>
         {{range .Sessions}}
         <tr>
             <td>Day {{.DaySequence}}</td>
-            <td>{{.StartAt}} - {{.EndAt}}</td> 
+            <td>{{.StartAt}} - {{.EndAt}}</td>
             <td>{{.Capacity}}</td>
             <td>{{.CurrentEnrolledCount}}</td>
-            <td>
-                <button disabled>Delete</button>
-            </td>
         </tr>
         {{end}}
     </table>
